@@ -48,7 +48,9 @@ export class UsersService {
     if (!userId) {
       throw new NotFoundException('user not found');
     } else {
-      return await this.userModel.update(updateUserDto, { where: { id } });
+      return await this.userModel.update(updateUserDto, {
+        where: { userId: id },
+      });
     }
   }
 
