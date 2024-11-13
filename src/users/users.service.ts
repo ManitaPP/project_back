@@ -1,13 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './models/user.model';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User) private userModel: typeof User) {}
+
   create(createUserDto: CreateUserDto) {
     return this.userModel.create(createUserDto);
   }
@@ -17,17 +17,17 @@ export class UsersService {
   }
 
   findOne(id: number) {
-    return this.userModel.findOne({ where: { userId: id } });
+    return this.userModel.findByPk(id);
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const updatedUser = await this.userModel.update(updateUserDto, {
-      where: { userId: id },
-    });
-    return updatedUser;
+    return this.userModel.update(updateUserDto, { where: { id } });
   }
 
-  remove(id: number) {
-    return this.userModel.destroy({ where: { userId: id } });
+  async remove(id: number) {
+    const user = await this.userModel.findByPk(id);
+    if (user) {
+      await user.destroy();
+    }
   }
 }
