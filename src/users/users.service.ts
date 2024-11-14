@@ -12,8 +12,34 @@ import {
 export class UsersService {
   constructor(@InjectModel(User) private userModel: typeof User) {}
 
-  create(createUserDto: CreateUserDto) {
-    return this.userModel.create(createUserDto);
+  async create(createUserDto: CreateUserDto) {
+    const existingUser = await this.userModel.findOne({
+      where: { email: createUserDto.email },
+    });
+    if (existingUser) {
+      throw new BadRequestException('มีอีเมลนี้อยู๋ในระบบแล้ว');
+    }
+
+    const existingThaiId = await this.userModel.findOne({
+      where: { thaiId: createUserDto.thaiId },
+    });
+    if (existingThaiId) {
+      throw new BadRequestException('รหัสบัตรประชาชนนี้มีอยู๋ในระบบแล้ว');
+    }
+
+    try {
+      return await this.userModel.create(createUserDto);
+    } catch (error) {
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        throw new BadRequestException(
+          'Duplicate field error: Email or Thai ID already exists.',
+        );
+      }
+      console.error('Database error:', error);
+      throw new BadRequestException(
+        'Unable to create user. Please check the input data and try again.',
+      );
+    }
   }
 
   findAll() {
