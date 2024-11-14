@@ -13,33 +13,8 @@ export class UsersService {
   constructor(@InjectModel(User) private userModel: typeof User) {}
 
   async create(createUserDto: CreateUserDto) {
-    const existingUser = await this.userModel.findOne({
-      where: { email: createUserDto.email },
-    });
-    if (existingUser) {
-      throw new BadRequestException('มีอีเมลนี้อยู๋ในระบบแล้ว');
-    }
-
-    const existingThaiId = await this.userModel.findOne({
-      where: { thaiId: createUserDto.thaiId },
-    });
-    if (existingThaiId) {
-      throw new BadRequestException('รหัสบัตรประชาชนนี้มีอยู๋ในระบบแล้ว');
-    }
-
-    try {
-      return await this.userModel.create(createUserDto);
-    } catch (error) {
-      if (error.name === 'SequelizeUniqueConstraintError') {
-        throw new BadRequestException(
-          'Duplicate field error: Email or Thai ID already exists.',
-        );
-      }
-      console.error('Database error:', error);
-      throw new BadRequestException(
-        'Unable to create user. Please check the input data and try again.',
-      );
-    }
+    const user = await this.userModel.create(createUserDto);
+    return user;
   }
 
   findAll() {
@@ -56,12 +31,33 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string) {
-    console.log(email);
     if (!email || typeof email !== 'string') {
       throw new BadRequestException('Invalid email provided');
     }
     const user = await this.userModel.findOne({
       where: { email: email },
+    });
+    return user || null;
+  }
+
+  async findOneByThaiId(id: string) {
+    console.log(id);
+    if (!id || typeof id !== 'string') {
+      throw new BadRequestException('Invalid id provided');
+    }
+    const user = await this.userModel.findOne({
+      where: { thaiId: id },
+    });
+    // if (!user) {
+    //   throw new BadRequestException('User not found');
+    // }
+    return user || null;
+  }
+
+  async findOneByRoleUser(role: string) {
+    console.log(role);
+    const user = await this.userModel.findOne({
+      where: { role: role },
     });
     if (!user) {
       throw new NotFoundException('User not found');

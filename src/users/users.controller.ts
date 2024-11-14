@@ -44,4 +44,14 @@ export class UsersController {
   findOneByEmail(@Param('email') email: string) {
     return this.usersService.findOneByEmail(email);
   }
+
+  @Get('/loginThai/:thaiId')
+  findOneByThaiId(@Param('thaiId') thaiId: string) {
+    return this.usersService.findOneByThaiId(thaiId);
+  }
+
+  @Get('/user/:role')
+  findOneByRoleUser(@Param('role') role: string) {
+    return this.usersService.findOneByRoleUser(role);
+  }
 }
