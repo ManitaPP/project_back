@@ -24,9 +24,16 @@ export class AuthService {
     pass: string,
   ): Promise<{ access_token: string; user: any }> {
     const user = await this.usersService.findOneByEmail(email);
-    if (!user || user.password !== pass) {
-      throw new UnauthorizedException();
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
     }
+
+    // Compare the plain text password with the hashed password
+    const isPasswordValid = await bcrypt.compare(pass, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
     const payload = { sub: user.userId, username: user.email };
 
     return {

@@ -18,7 +18,9 @@ export class UsersService {
   }
 
   findAll() {
-    return this.userModel.findAll();
+    return this.userModel.findAll({
+      order: [['thaiId', 'ASC']],
+    });
   }
 
   async findOne(id: number) {
@@ -52,17 +54,6 @@ export class UsersService {
     //   throw new BadRequestException('User not found');
     // }
     return user || null;
-  }
-
-  async findOneByRoleUser(role: string) {
-    console.log(role);
-    const user = await this.userModel.findOne({
-      where: { role: role },
-    });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    return user;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
