@@ -3,10 +3,10 @@ import {
   Column,
   Model,
   DataType,
-  ForeignKey,
   BelongsTo,
+  ForeignKey,
+  HasMany,
 } from 'sequelize-typescript';
-import { Village } from 'src/villages/entities/village.model';
 
 @Table({
   timestamps: true,
@@ -47,6 +47,12 @@ export class User extends Model<User> {
   password: string;
 
   @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  tel: string;
+
+  @Column({
     type: DataType.ENUM('admin', 'user'),
     allowNull: false,
   })
@@ -63,13 +69,25 @@ export class User extends Model<User> {
   })
   position: 'กำนัน' | 'ผู้ใหญ่บ้าน' | 'ผู้ช่วยผู้ใหญ่บ้าน' | 'ชาวบ้าน';
 
-  @ForeignKey(() => Village)
+  @ForeignKey(() => User)
   @Column({
     type: DataType.INTEGER,
-    allowNull: false,
+    allowNull: true,
   })
-  villageId: number;
+  leaderId: number;
 
-  @BelongsTo(() => Village)
-  village: Village;
+  @BelongsTo(() => User, 'leaderId')
+  leader: User;
+
+  @HasMany(() => User, 'leaderId')
+  subordinates: User[];
 }
+// @ForeignKey(() => Village)
+// @Column({
+//   type: DataType.INTEGER,
+//   allowNull: true,
+// })
+// villageId: number;
+
+// @BelongsTo(() => Village)
+// village: Village;

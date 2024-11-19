@@ -5,13 +5,13 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     // เพิ่มคอลัมน์ `villageId` ไปที่ตาราง `Users`
-    await queryInterface.addColumn('Users', 'villageId', {
-      type: Sequelize.INTEGER,
-      allowNull: true,
+    await queryInterface.addColumn('Villages', 'subdistrict', {
+      type: Sequelize.STRING, // หรือใช้ DataType อื่นตามที่เหมาะสม เช่น TEXT
+      allowNull: true, // หรือกำหนดเป็น false ถ้าจำเป็นต้องมีค่าเสมอ
     });
   },
   down: async (queryInterface, Sequelize) => {
     // ลบคอลัมน์ `villageId` หากต้องการย้อนกลับการ migration
-    await queryInterface.removeColumn('Users', 'villageId');
+    await queryInterface.removeColumn('Villages', 'subdistrict');
   },
 };

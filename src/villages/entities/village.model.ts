@@ -1,5 +1,4 @@
-import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
-import { User } from 'src/users/models/user.model';
+import { Column, DataType, Model, Table } from 'sequelize-typescript';
 
 @Table({
   timestamps: true,
@@ -30,6 +29,12 @@ export class Village extends Model<Village> {
     type: DataType.STRING,
     allowNull: true,
   })
+  subdistrict: string; // ตำบล
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
   district: string; // อำเภอ
 
   @Column({
@@ -44,6 +49,6 @@ export class Village extends Model<Village> {
   })
   postalCode: string; // รหัสไปรษณีย์
 
-  @HasMany(() => User) // หมู่บ้านจะมีหลาย user (เช่น กำนัน, ผู้ใหญ่บ้าน, ชาวบ้าน)
-  users: User[];
+  // @HasMany(() => User) // หมู่บ้านจะมีหลาย user (เช่น กำนัน, ผู้ใหญ่บ้าน, ชาวบ้าน)
+  // users: User[];
 }

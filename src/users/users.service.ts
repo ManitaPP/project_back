@@ -12,31 +12,26 @@ import { Village } from 'src/villages/entities/village.model';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectModel(User) private userModel: typeof User,
-    @InjectModel(Village) private villageModel: typeof Village,
-  ) {}
+  constructor(@InjectModel(User) private userModel: typeof User) {}
 
   async create(createUserDto: CreateUserDto) {
-    const village = await this.villageModel.findOne({
-      where: { villageId: createUserDto.villageId },
+    const user = await this.userModel.create({
+      ...createUserDto,
+      leaderId: createUserDto.leaderId,
     });
-    if (!village) {
-      throw new NotFoundException('Village not found');
-    }
-    const user = new User();
-    user.thaiId = createUserDto.thaiId;
-    user.name = createUserDto.name;
-    user.email = createUserDto.email;
-    user.password = createUserDto.password;
-    user.villageId = createUserDto.villageId;
-    const newUser = await this.userModel.create(user);
-    return newUser;
+
+    return user;
   }
 
   findAll() {
     return this.userModel.findAll({
       order: [['thaiId', 'ASC']],
+      include: [
+        {
+          model: User,
+          as: 'leader',
+        },
+      ],
     });
   }
 
@@ -70,6 +65,16 @@ export class UsersService {
     // if (!user) {
     //   throw new BadRequestException('User not found');
     // }
+    return user || null;
+  }
+
+  async findByLeader(id: number) {
+    if (!id) {
+      throw new BadRequestException('ไม่มี id');
+    }
+    const user = await this.userModel.findAll({
+      where: { leaderId: id },
+    });
     return user || null;
   }
 

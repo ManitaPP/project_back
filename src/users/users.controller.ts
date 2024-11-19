@@ -36,7 +36,7 @@ export class UsersController {
 
   @Patch(':id')
   @UseGuards(AuthGuard)
-  @Roles(Role.Admin)
+  @Roles(Role.User, Role.Admin)
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
   }
@@ -56,5 +56,9 @@ export class UsersController {
   @Get('/loginThai/:thaiId')
   findOneByThaiId(@Param('thaiId') thaiId: string) {
     return this.usersService.findOneByThaiId(thaiId);
+  }
+  @Get('/leader/:leaderId')
+  findByLeader(@Param('leaderId') leaderId: number) {
+    return this.usersService.findByLeader(leaderId);
   }
 }

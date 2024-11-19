@@ -53,13 +53,13 @@ export class AuthService {
     }
     const email = await this.usersService.findOneByEmail(createUserDto.email);
     if (email) {
-      throw new BadRequestException('มีอีเมลนี้อยู๋ในระบบแล้ว');
+      throw new BadRequestException('มีอีเมลนี้อยู่ในระบบแล้ว');
     }
     const thaiId = await this.usersService.findOneByThaiId(
       createUserDto.thaiId,
     );
     if (thaiId) {
-      throw new BadRequestException('รหัสบัตรประชาชนนี้มีอยู๋ในระบบแล้ว');
+      throw new BadRequestException('รหัสบัตรประชาชนนี้มีอยู่ในระบบแล้ว');
     }
     const salt = await bcrypt.genSalt(10);
     createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
@@ -68,6 +68,7 @@ export class AuthService {
       name: createUserDto.name,
       email: createUserDto.email,
       password: createUserDto.password,
+      tel: createUserDto.tel,
       role: 'user',
     });
     console.log(user);
@@ -77,13 +78,13 @@ export class AuthService {
   registerAdmin = async (createUserDto: CreateUserDto) => {
     const email = await this.usersService.findOneByEmail(createUserDto.email);
     if (email) {
-      throw new BadRequestException('มีอีเมลนี้อยู๋ในระบบแล้ว');
+      throw new BadRequestException('มีอีเมลนี้อยู่ในระบบแล้ว');
     }
     const thaiId = await this.usersService.findOneByThaiId(
       createUserDto.thaiId,
     );
     if (thaiId) {
-      throw new BadRequestException('รหัสบัตรประชาชนนี้มีอยู๋ในระบบแล้ว');
+      throw new BadRequestException('รหัสบัตรประชาชนนี้มีอยู่ในระบบแล้ว');
     }
     const salt = await bcrypt.genSalt(10);
     createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
