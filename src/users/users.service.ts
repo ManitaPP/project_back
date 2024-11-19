@@ -8,7 +8,6 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { Village } from 'src/villages/entities/village.model';
 
 @Injectable()
 export class UsersService {
@@ -77,15 +76,43 @@ export class UsersService {
     });
     return user || null;
   }
+  async findPositionByLeaderId(id: number) {
+    if (!id) {
+      throw new BadRequestException('ไม่มี id');
+    }
+    const findUsersRecursively = async (leaderId: number) => {
+      const users = await this.userModel.findAll({
+        where: { leaderId: leaderId },
+      });
+      if (users.length === 0) {
+        return [];
+      }
+      const result = [];
+      for (const user of users) {
+        const subordinates = await findUsersRecursively(user.userId);
+        console.log(subordinates);
+        result.push({
+          ...user.toJSON(),
+          subordinates,
+        });
+      }
+
+      return result;
+    };
+
+    const users = await findUsersRecursively(id);
+    return users;
+  }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     const userId = await this.userModel.findByPk(id);
     if (!userId) {
       throw new NotFoundException('user not found');
     } else {
-      return await this.userModel.update(updateUserDto, {
+      const user = await this.userModel.update(updateUserDto, {
         where: { userId: id },
       });
+      return user;
     }
   }
 

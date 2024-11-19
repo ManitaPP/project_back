@@ -93,6 +93,7 @@ export class AuthService {
       name: createUserDto.name,
       email: createUserDto.email,
       password: createUserDto.password,
+      tel: createUserDto.tel,
       role: 'admin',
     });
     return user;

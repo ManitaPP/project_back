@@ -61,4 +61,8 @@ export class UsersController {
   findByLeader(@Param('leaderId') leaderId: number) {
     return this.usersService.findByLeader(leaderId);
   }
+  @Get('/position/:leaderId')
+  findPositionByLeaderId(@Param('leaderId') leaderId: number) {
+    return this.usersService.findPositionByLeaderId(leaderId);
+  }
 }
