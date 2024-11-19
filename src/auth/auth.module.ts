@@ -7,6 +7,7 @@ import { jwtConstants } from './constants';
 import { UsersService } from 'src/users/users.service';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from 'src/users/models/user.model';
+import { Village } from 'src/villages/entities/village.model';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { User } from 'src/users/models/user.model';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '1h' },
     }),
-    SequelizeModule.forFeature([User]),
+    SequelizeModule.forFeature([User, Village]),
   ],
   controllers: [AuthController],
   providers: [AuthService, UsersService],

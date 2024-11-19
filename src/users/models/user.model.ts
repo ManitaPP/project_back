@@ -1,4 +1,12 @@
-import { Table, Column, Model, DataType } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  ForeignKey,
+  BelongsTo,
+} from 'sequelize-typescript';
+import { Village } from 'src/villages/entities/village.model';
 
 @Table({
   timestamps: true,
@@ -39,8 +47,29 @@ export class User extends Model<User> {
   password: string;
 
   @Column({
-    type: DataType.STRING,
+    type: DataType.ENUM('admin', 'user'),
     allowNull: false,
   })
-  role: string;
+  role: 'admin' | 'user';
+
+  @Column({
+    type: DataType.ENUM(
+      'กำนัน',
+      'ผู้ใหญ่บ้าน',
+      'ผู้ช่วยผู้ใหญ่บ้าน',
+      'ชาวบ้าน',
+    ),
+    allowNull: true,
+  })
+  position: 'กำนัน' | 'ผู้ใหญ่บ้าน' | 'ผู้ช่วยผู้ใหญ่บ้าน' | 'ชาวบ้าน';
+
+  @ForeignKey(() => Village)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  villageId: number;
+
+  @BelongsTo(() => Village)
+  village: Village;
 }

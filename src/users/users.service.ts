@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './models/user.model';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -7,14 +8,30 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
+import { Village } from 'src/villages/entities/village.model';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User) private userModel: typeof User) {}
+  constructor(
+    @InjectModel(User) private userModel: typeof User,
+    @InjectModel(Village) private villageModel: typeof Village,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const user = await this.userModel.create(createUserDto);
-    return user;
+    const village = await this.villageModel.findOne({
+      where: { villageId: createUserDto.villageId },
+    });
+    if (!village) {
+      throw new NotFoundException('Village not found');
+    }
+    const user = new User();
+    user.thaiId = createUserDto.thaiId;
+    user.name = createUserDto.name;
+    user.email = createUserDto.email;
+    user.password = createUserDto.password;
+    user.villageId = createUserDto.villageId;
+    const newUser = await this.userModel.create(user);
+    return newUser;
   }
 
   findAll() {

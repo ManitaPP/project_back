@@ -4,6 +4,9 @@ import { UsersModule } from './users/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { User } from './users/models/user.model';
+import { VillagesModule } from './villages/villages.module';
+import { Village } from './villages/entities/village.model';
 
 @Module({
   imports: [
@@ -14,11 +17,13 @@ import { AuthModule } from './auth/auth.module';
       username: 'postgres',
       password: 'password123@',
       database: 'myDatabase',
+      models: [User, Village],
       autoLoadModels: true,
       synchronize: true,
     }),
     UsersModule,
     AuthModule,
+    VillagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
