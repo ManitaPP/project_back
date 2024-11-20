@@ -7,6 +7,8 @@ import {
   ForeignKey,
   HasMany,
 } from 'sequelize-typescript';
+import { Department } from 'src/departments/entities/department.model';
+import { Position } from 'src/positions/entities/position.model';
 
 @Table({
   timestamps: true,
@@ -58,17 +60,6 @@ export class User extends Model<User> {
   })
   role: 'admin' | 'user';
 
-  @Column({
-    type: DataType.ENUM(
-      'กำนัน',
-      'ผู้ใหญ่บ้าน',
-      'ผู้ช่วยผู้ใหญ่บ้าน',
-      'ชาวบ้าน',
-    ),
-    allowNull: true,
-  })
-  position: 'กำนัน' | 'ผู้ใหญ่บ้าน' | 'ผู้ช่วยผู้ใหญ่บ้าน' | 'ชาวบ้าน';
-
   @ForeignKey(() => User)
   @Column({
     type: DataType.INTEGER,
@@ -81,13 +72,24 @@ export class User extends Model<User> {
 
   @HasMany(() => User, 'leaderId')
   subordinates: User[];
-}
-// @ForeignKey(() => Village)
-// @Column({
-//   type: DataType.INTEGER,
-//   allowNull: true,
-// })
-// villageId: number;
 
-// @BelongsTo(() => Village)
-// village: Village;
+  @ForeignKey(() => Position)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: true,
+  })
+  positionId: number;
+
+  @BelongsTo(() => Position)
+  position: Position;
+
+  @ForeignKey(() => Department)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: true,
+  })
+  departmentId: number;
+
+  @BelongsTo(() => Department)
+  department: Department;
+}

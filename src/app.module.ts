@@ -5,8 +5,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { User } from './users/models/user.model';
-import { VillagesModule } from './villages/villages.module';
-import { Village } from './villages/entities/village.model';
+import { PositionsModule } from './positions/positions.module';
+import { DepartmentsModule } from './departments/departments.module';
+import { Department } from './departments/entities/department.model';
+import { Position } from './positions/entities/position.model';
 
 @Module({
   imports: [
@@ -17,13 +19,14 @@ import { Village } from './villages/entities/village.model';
       username: 'postgres',
       password: 'password123@',
       database: 'myDatabase',
-      models: [User, Village],
+      models: [User, Department, Position],
       autoLoadModels: true,
       synchronize: true,
     }),
     UsersModule,
     AuthModule,
-    VillagesModule,
+    PositionsModule,
+    DepartmentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

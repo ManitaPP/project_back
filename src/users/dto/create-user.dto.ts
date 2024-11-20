@@ -1,7 +1,6 @@
 import {
   IsEmail,
   IsNotEmpty,
-  IsOptional,
   IsString,
   Length,
   Matches,
@@ -28,12 +27,7 @@ export class CreateUserDto {
   @Matches(/^0[0-9]{9}$/, { message: 'ข้อมูลเบอร์โทรศัพท์ไม่ถูกต้อง' })
   tel: string;
 
-  @IsOptional()
-  position: 'กำนัน' | 'ผู้ใหญ่บ้าน' | 'ผู้ช่วยผู้ใหญ่บ้าน' | 'ชาวบ้าน';
-
   leaderId: number;
-  // villageId: number;
-  // @IsString()
-  // @IsNotEmpty()
-  // role: string;
+  positionId: number;
+  departmentId: number;
 }

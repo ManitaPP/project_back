@@ -8,15 +8,29 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
+import { Department } from 'src/departments/entities/department.model';
+import { Position } from 'src/positions/entities/position.model';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User) private userModel: typeof User) {}
+  constructor(
+    @InjectModel(User) private userModel: typeof User,
+    @InjectModel(Department) private departmentModel: typeof Department,
+    @InjectModel(Position) private positionModel: typeof Position,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
+    const position = await this.positionModel.findByPk(
+      createUserDto.positionId,
+    );
+    const department = await this.departmentModel.findByPk(
+      createUserDto.departmentId,
+    );
     const user = await this.userModel.create({
       ...createUserDto,
       leaderId: createUserDto.leaderId,
+      positionId: position.id,
+      departmentId: department.id,
     });
 
     return user;
@@ -29,6 +43,14 @@ export class UsersService {
         {
           model: User,
           as: 'leader',
+        },
+        {
+          model: Department,
+          as: 'department',
+        },
+        {
+          model: Position,
+          as: 'position',
         },
       ],
     });
