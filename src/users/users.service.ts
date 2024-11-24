@@ -38,7 +38,6 @@ export class UsersService {
 
   findAll() {
     return this.userModel.findAll({
-      order: [['thaiId', 'ASC']],
       include: [
         {
           model: User,
@@ -53,16 +52,45 @@ export class UsersService {
           as: 'position',
         },
       ],
+      order: [[{ model: Department, as: 'department' }, 'name', 'ASC']],
     });
   }
 
   async findOne(id: number) {
-    const user = await this.userModel.findByPk(id);
+    const user = await this.userModel.findByPk(id, {
+      include: [
+        {
+          model: Position,
+          required: false,
+        },
+        {
+          model: Department,
+          required: false,
+        },
+      ],
+    });
     if (!user) {
-      throw new NotFoundException('user not found');
-    } else {
-      return user;
+      throw new NotFoundException('User not found');
     }
+
+    return user;
+  }
+  async updateLeader(userId: number): Promise<any> {
+    const user = await this.userModel.findByPk(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    await user.update({ leaderId: null });
+
+    await this.userModel.update(
+      { leaderId: null },
+      {
+        where: { leaderId: userId },
+      },
+    );
+
+    return user;
   }
 
   async findOneByEmail(email: string) {
@@ -71,6 +99,16 @@ export class UsersService {
     }
     const user = await this.userModel.findOne({
       where: { email: email },
+      include: [
+        {
+          model: Position,
+          as: 'position',
+        },
+        {
+          model: Department,
+          as: 'department',
+        },
+      ],
     });
     return user || null;
   }
@@ -82,6 +120,16 @@ export class UsersService {
     }
     const user = await this.userModel.findOne({
       where: { thaiId: id },
+      include: [
+        {
+          model: Position,
+          required: false,
+        },
+        {
+          model: Department,
+          required: false,
+        },
+      ],
     });
     // if (!user) {
     //   throw new BadRequestException('User not found');
@@ -95,6 +143,16 @@ export class UsersService {
     }
     const user = await this.userModel.findAll({
       where: { leaderId: id },
+      include: [
+        {
+          model: Position,
+          required: false,
+        },
+        {
+          model: Department,
+          required: false,
+        },
+      ],
     });
     return user || null;
   }
@@ -105,16 +163,31 @@ export class UsersService {
     const findUsersRecursively = async (leaderId: number) => {
       const users = await this.userModel.findAll({
         where: { leaderId: leaderId },
+        include: [
+          {
+            model: Position,
+            required: false,
+          },
+          {
+            model: Department,
+            required: false,
+          },
+        ],
       });
+
       if (users.length === 0) {
         return [];
       }
+
       const result = [];
       for (const user of users) {
         const subordinates = await findUsersRecursively(user.userId);
         console.log(subordinates);
+
         result.push({
           ...user.toJSON(),
+          position: user.position,
+          department: user.department,
           subordinates,
         });
       }
@@ -126,16 +199,20 @@ export class UsersService {
     return users;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    const userId = await this.userModel.findByPk(id);
-    if (!userId) {
-      throw new NotFoundException('user not found');
-    } else {
-      const user = await this.userModel.update(updateUserDto, {
-        where: { userId: id },
-      });
-      return user;
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.userModel.findByPk(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
+    await this.userModel.update(updateUserDto, {
+      where: { userId: id },
+    });
+    const updatedUser = await this.userModel.findByPk(id);
+    if (!updatedUser) {
+      throw new NotFoundException('Error retrieving updated user');
+    }
+
+    return updatedUser;
   }
 
   async remove(id: number) {

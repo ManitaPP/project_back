@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -64,5 +65,10 @@ export class UsersController {
   @Get('/position/:leaderId')
   findPositionByLeaderId(@Param('leaderId') leaderId: number) {
     return this.usersService.findPositionByLeaderId(leaderId);
+  }
+
+  @Patch('/updateLeader/:userId')
+  updateLeader(@Param('userId', ParseIntPipe) userId: number) {
+    return this.usersService.updateLeader(userId);
   }
 }
