@@ -24,6 +24,10 @@ export class UsersController {
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
+  @Get('/search/:query')
+  searchUsers(@Param('query') query: string) {
+    return this.usersService.searchUsers(query);
+  }
 
   @Get()
   findAll() {
@@ -33,6 +37,11 @@ export class UsersController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
+  }
+
+  @Get('/name/:id')
+  findOneByName(@Param('id') name: string) {
+    return this.usersService.findOneByName(name);
   }
 
   @Patch(':id')

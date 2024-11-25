@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { Department } from 'src/departments/entities/department.model';
 import { Position } from 'src/positions/entities/position.model';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class UsersService {
@@ -35,6 +36,36 @@ export class UsersService {
 
     return user;
   }
+  async searchUsers(query: string) {
+    if (!query || typeof query !== 'string') {
+      throw new BadRequestException('Invalid search query');
+    }
+    const searchQuery = query.trim().toLowerCase();
+    const users = await this.userModel.findAll({
+      where: {
+        [Op.or]: [
+          { name: { [Op.iLike]: `%${searchQuery}%` } },
+          { email: { [Op.iLike]: `%${searchQuery}%` } },
+          { thaiId: { [Op.iLike]: `%${searchQuery}%` } },
+          { tel: { [Op.iLike]: `%${searchQuery}%` } },
+        ],
+      },
+      include: [
+        {
+          model: Position,
+          as: 'position',
+          required: false,
+        },
+        {
+          model: Department,
+          as: 'department',
+          required: false,
+        },
+      ],
+    });
+
+    return users || [];
+  }
 
   findAll() {
     return this.userModel.findAll({
@@ -58,6 +89,27 @@ export class UsersService {
 
   async findOne(id: number) {
     const user = await this.userModel.findByPk(id, {
+      include: [
+        {
+          model: Position,
+          required: false,
+        },
+        {
+          model: Department,
+          required: false,
+        },
+      ],
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
+  }
+
+  async findOneByName(name: string) {
+    const user = await this.userModel.findOne({
+      where: { name: name },
       include: [
         {
           model: Position,
