@@ -87,6 +87,26 @@ export class UsersService {
     });
   }
 
+  findAllD() {
+    return this.userModel.findAll({
+      paranoid: false,
+      include: [
+        {
+          model: User,
+          as: 'leader',
+        },
+        {
+          model: Department,
+          as: 'department',
+        },
+        {
+          model: Position,
+          as: 'position',
+        },
+      ],
+      order: [[{ model: Department, as: 'department' }, 'name', 'ASC']],
+    });
+  }
   async findOne(id: number) {
     const user = await this.userModel.findByPk(id, {
       include: [
@@ -266,7 +286,12 @@ export class UsersService {
 
     return updatedUser;
   }
-
+  async restore(id: number) {
+    const user = await this.userModel.findByPk(id, { paranoid: false }); // ดึงข้อมูลรวมถึงที่ถูกลบ
+    if (user) {
+      await user.restore(); // กู้คืนผู้ใช้ (ตั้งค่า deletedAt = null)
+    }
+  }
   async remove(id: number) {
     const user = await this.userModel.findByPk(id);
     if (user) {

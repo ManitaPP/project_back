@@ -34,6 +34,11 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get('/findAll')
+  findAllDelete() {
+    return this.usersService.findAllD();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
@@ -51,6 +56,10 @@ export class UsersController {
     return this.usersService.update(+id, updateUserDto);
   }
 
+  @Post(':id/restore')
+  async restoreUser(@Param('id') id: number) {
+    return this.usersService.restore(+id);
+  }
   @Delete(':id')
   @UseGuards(AuthGuard)
   @Roles(Role.Admin)
