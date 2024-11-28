@@ -186,7 +186,6 @@ export class UsersService {
   }
 
   async findOneByThaiId(id: string) {
-    console.log(id);
     if (!id || typeof id !== 'string') {
       throw new BadRequestException('Invalid id provided');
     }
@@ -228,6 +227,24 @@ export class UsersService {
     });
     return user || null;
   }
+  async findUsersRecursively(positionId: number): Promise<any[]> {
+    const users = await User.findAll({
+      where: { positionId: positionId },
+      include: [Position],
+    });
+
+    const results = [];
+    for (const user of users) {
+      const subordinates = await this.findUsersRecursively(user.positionId);
+      results.push({
+        ...user.toJSON(),
+        subordinates,
+      });
+    }
+
+    return results;
+  }
+
   async findPositionByLeaderId(id: number) {
     if (!id) {
       throw new BadRequestException('ไม่มี id');
@@ -254,8 +271,6 @@ export class UsersService {
       const result = [];
       for (const user of users) {
         const subordinates = await findUsersRecursively(user.userId);
-        console.log(subordinates);
-
         result.push({
           ...user.toJSON(),
           position: user.position,
@@ -268,6 +283,88 @@ export class UsersService {
     };
 
     const users = await findUsersRecursively(id);
+    return users;
+  }
+
+  async findUsersByPriority(priority: number) {
+    if (!priority) {
+      throw new BadRequestException('ไม่มี priority');
+    }
+
+    const findUsersRecursively = async (priority: number) => {
+      // ค้นหาผู้ใช้ที่มี priority ตรงกัน
+      const users = await this.userModel.findAll({
+        include: [
+          {
+            model: Position,
+            where: { priority },
+            required: true, // เชื่อมโยงกับตำแหน่งที่ตรงกับ priority
+          },
+          {
+            model: Department,
+            required: false,
+          },
+        ],
+      });
+
+      if (users.length === 0) {
+        return [];
+      }
+
+      const result = [];
+      for (const user of users) {
+        // เรียกหาผู้ใต้บังคับบัญชา (subordinates) สำหรับ user นี้
+        const subordinates = await findUsersRecursivelyByLeader(user.userId);
+        result.push({
+          ...user.toJSON(),
+          position: user.position,
+          department: user.department,
+          subordinates, // เก็บ subordinates ที่พบ
+        });
+      }
+
+      return result;
+    };
+
+    // ฟังก์ชันค้นหาผู้ใช้ที่มี leaderId เป็น userId ของผู้ใช้
+    const findUsersRecursivelyByLeader = async (leaderId: number) => {
+      const subordinates = await this.userModel.findAll({
+        where: { leaderId: leaderId },
+        include: [
+          {
+            model: Position,
+            required: false,
+          },
+          {
+            model: Department,
+            required: false,
+          },
+        ],
+      });
+
+      if (subordinates.length === 0) {
+        return [];
+      }
+
+      const result = [];
+      for (const user of subordinates) {
+        // เรียกหาผู้ใต้บังคับบัญชาของผู้ใต้บังคับบัญชา (subordinates ของ subordinates)
+        const subordinatesOfSubordinate = await findUsersRecursivelyByLeader(
+          user.userId,
+        );
+        result.push({
+          ...user.toJSON(),
+          position: user.position,
+          department: user.department,
+          subordinates: subordinatesOfSubordinate, // เก็บ subordinates ของ subordinates
+        });
+      }
+
+      return result;
+    };
+
+    // เริ่มต้นการค้นหาผู้ใช้ทั้งหมดที่มี priority ตรงกัน
+    const users = await findUsersRecursively(priority);
     return users;
   }
 

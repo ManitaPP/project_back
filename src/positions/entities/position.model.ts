@@ -26,6 +26,12 @@ export class Position extends Model<Position> {
   })
   description: string;
 
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  priority: number;
+
   @HasMany(() => User)
   users: User[];
 }

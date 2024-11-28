@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   ParseIntPipe,
+  BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,6 +16,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Roles } from 'src/auth/roles.decorator';
 import { Role } from 'src/auth/role.enum';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { User } from './models/user.model';
 
 @Controller('users')
 export class UsersController {
@@ -42,6 +44,16 @@ export class UsersController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
+  }
+  @Get('priority/:priority')
+  async getUsersByPriority(
+    @Param('priority') priority: string,
+  ): Promise<User[]> {
+    const priorityNumber = parseInt(priority, 10);
+    if (isNaN(priorityNumber)) {
+      throw new BadRequestException('Invalid priority value');
+    }
+    return this.usersService.findUsersByPriority(priorityNumber);
   }
 
   @Get('/name/:id')
