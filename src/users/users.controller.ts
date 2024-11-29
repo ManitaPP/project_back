@@ -41,6 +41,11 @@ export class UsersController {
     return this.usersService.findAllD();
   }
 
+  @Get('/findAllNullLeader')
+  findAllLeaderIdNull() {
+    return this.usersService.findAllLeaderIdNull();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);

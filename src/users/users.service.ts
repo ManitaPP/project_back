@@ -87,6 +87,31 @@ export class UsersService {
     });
   }
 
+  findAllLeaderIdNull() {
+    return this.userModel.findAll({
+      include: [
+        {
+          model: User,
+          as: 'leader',
+        },
+        {
+          model: Department,
+          as: 'department',
+        },
+        {
+          model: Position,
+          as: 'position',
+        },
+      ],
+      where: {
+        leaderId: null,
+        '$position.name$': {
+          [Op.ne]: 'CEO',
+        },
+      },
+      order: [[{ model: Department, as: 'department' }, 'name', 'ASC']],
+    });
+  }
   findAllD() {
     return this.userModel.findAll({
       paranoid: false,
