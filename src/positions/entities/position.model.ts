@@ -16,7 +16,6 @@ export class Position extends Model<Position> {
   @Column({
     type: DataType.STRING,
     allowNull: false,
-    unique: true,
   })
   name: string;
 

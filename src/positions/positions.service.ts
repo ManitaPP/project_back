@@ -6,21 +6,29 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Position } from './entities/position.model';
 import { Department } from 'src/departments/entities/department.model';
 import { User } from 'src/users/models/user.model';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class PositionsService {
   constructor(@InjectModel(Position) private positionModel: typeof Position) {}
   async create(createPositionDto: CreatePositionDto) {
     const { priority } = createPositionDto;
+
     if (priority) {
-      const conflictingPosition = await this.positionModel.findOne({
-        where: { priority },
+      // ค้นหาตำแหน่งที่มี priority เท่ากับค่าที่จะสร้างใหม่
+      const conflictingPositions = await this.positionModel.findAll({
+        where: {
+          priority: priority,
+        },
       });
-      if (conflictingPosition) {
+
+      if (conflictingPositions.length > 0) {
         await this.positionModel.increment('priority', {
           by: 1,
           where: {
-            priority: { $gte: priority },
+            priority: {
+              [Op.gte]: priority,
+            },
           },
         });
       }
