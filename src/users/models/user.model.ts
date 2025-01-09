@@ -9,6 +9,7 @@ import {
 } from 'sequelize-typescript';
 import { Department } from 'src/departments/entities/department.model';
 import { Position } from 'src/positions/entities/position.model';
+import { ReqRecv } from 'src/req-recvs/entities/req-recv.model';
 
 @Table({
   timestamps: true,
@@ -92,4 +93,7 @@ export class User extends Model<User> {
 
   @BelongsTo(() => Department)
   department: Department;
+
+  @HasMany(() => ReqRecv)
+  reqRecvs: ReqRecv[];
 }

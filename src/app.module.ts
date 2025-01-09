@@ -9,6 +9,12 @@ import { PositionsModule } from './positions/positions.module';
 import { DepartmentsModule } from './departments/departments.module';
 import { Department } from './departments/entities/department.model';
 import { Position } from './positions/entities/position.model';
+import { ReqRecvsModule } from './req-recvs/req-recvs.module';
+import { RequestsModule } from './requests/requests.module';
+import { RequestTypesModule } from './request-types/request-types.module';
+import { ReqRecv } from './req-recvs/entities/req-recv.model';
+import { Request } from './requests/entities/request.model';
+import { RequestType } from './request-types/entities/request-type.model';
 
 @Module({
   imports: [
@@ -19,7 +25,7 @@ import { Position } from './positions/entities/position.model';
       username: 'postgres',
       password: 'password123@',
       database: 'myDatabase',
-      models: [User, Department, Position],
+      models: [User, Department, Position, ReqRecv, Request, RequestType],
       autoLoadModels: true,
       synchronize: true,
     }),
@@ -27,6 +33,9 @@ import { Position } from './positions/entities/position.model';
     AuthModule,
     PositionsModule,
     DepartmentsModule,
+    ReqRecvsModule,
+    RequestsModule,
+    RequestTypesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
