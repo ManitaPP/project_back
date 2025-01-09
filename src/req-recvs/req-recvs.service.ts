@@ -4,21 +4,21 @@ import { CreateReqRecvDto } from './dto/create-req-recv.dto';
 import { UpdateReqRecvDto } from './dto/update-req-recv.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { ReqRecv } from './entities/req-recv.model';
-import { Request } from 'src/requests/entities/request.model';
 import { User } from 'src/users/models/user.model';
+import { UserRequest } from 'src/user-requests/entities/user-request.model';
 
 @Injectable()
 export class ReqRecvsService {
   constructor(
     @InjectModel(ReqRecv) private reqRecvModel: typeof ReqRecv,
     @InjectModel(User) private userModel: typeof User,
-    @InjectModel(Request) private requestModel: typeof Request,
+    @InjectModel(UserRequest) private requestModel: typeof UserRequest,
   ) {}
   async create(createReqRecvDto: CreateReqRecvDto) {
     const request = await this.requestModel.findByPk(
       createReqRecvDto.requestId,
     );
-    const user = await this.reqRecvModel.findByPk(createReqRecvDto.userId);
+    const user = await this.userModel.findByPk(createReqRecvDto.userId);
     const reqRecv = await this.reqRecvModel.create({
       ...createReqRecvDto,
       requestId: request.id,
@@ -36,7 +36,7 @@ export class ReqRecvsService {
           as: 'user',
         },
         {
-          model: Request,
+          model: UserRequest,
           as: 'request',
         },
       ],
@@ -51,7 +51,7 @@ export class ReqRecvsService {
           required: false,
         },
         {
-          model: Request,
+          model: UserRequest,
           required: false,
         },
       ],

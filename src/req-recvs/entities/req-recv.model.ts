@@ -6,8 +6,8 @@ import {
   ForeignKey,
   BelongsTo,
 } from 'sequelize-typescript';
+import { UserRequest } from 'src/user-requests/entities/user-request.model';
 import { User } from 'src/users/models/user.model';
-import { Request } from 'src/requests/entities/request.model';
 
 @Table({
   timestamps: true,
@@ -37,13 +37,13 @@ export class ReqRecv extends Model<ReqRecv> {
   @BelongsTo(() => User, 'userId')
   user: User;
 
-  @ForeignKey(() => Request)
+  @ForeignKey(() => UserRequest)
   @Column({
     type: DataType.INTEGER,
     allowNull: true,
   })
   requestId: number;
 
-  @BelongsTo(() => Request, 'userId')
-  request: Request;
+  @BelongsTo(() => UserRequest, 'requestId')
+  request: UserRequest;
 }

@@ -1,5 +1,5 @@
 import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
-import { Request } from 'src/requests/entities/request.model';
+import { UserRequest } from 'src/user-requests/entities/user-request.model';
 
 @Table({
   timestamps: true,
@@ -37,6 +37,6 @@ export class RequestType extends Model<RequestType> {
   })
   file: string;
 
-  @HasMany(() => Request)
-  request: Request[];
+  @HasMany(() => UserRequest)
+  request: UserRequest[];
 }

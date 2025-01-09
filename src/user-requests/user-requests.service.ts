@@ -1,25 +1,27 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateRequestDto } from './dto/create-request.dto';
-import { UpdateRequestDto } from './dto/update-request.dto';
+import { CreateUserRequestDto } from './dto/create-user-request.dto';
+import { UpdateUserRequestDto } from './dto/update-user-request.dto';
 import { InjectModel } from '@nestjs/sequelize';
+import { UserRequest } from './entities/user-request.model';
 import { RequestType } from 'src/request-types/entities/request-type.model';
-import { Request } from './entities/request.model';
 
 @Injectable()
-export class RequestsService {
+export class UserRequestsService {
   constructor(
-    @InjectModel(Request) private requestModel: typeof Request,
+    @InjectModel(UserRequest) private requestModel: typeof UserRequest,
     @InjectModel(RequestType) private requestTypeModel: typeof RequestType,
   ) {}
-  async create(createRequestDto: CreateRequestDto) {
-    const requestType = await this.requestTypeModel.findByPk(
-      createRequestDto.reTypeId,
+
+  async create(createUserRequestDto: CreateUserRequestDto) {
+    const type = await this.requestTypeModel.findByPk(
+      createUserRequestDto.reTypeId,
     );
     const request = await this.requestModel.create({
-      ...createRequestDto,
-      requestType,
+      ...createUserRequestDto,
+      requestTypeId: type.id,
     });
+
     return request;
   }
 
@@ -28,7 +30,7 @@ export class RequestsService {
       include: [
         {
           model: RequestType,
-          as: 'Type',
+          as: 'requestType',
         },
       ],
     });
@@ -46,15 +48,16 @@ export class RequestsService {
     if (!request) {
       throw new NotFoundException('request not found');
     }
+
     return request;
   }
 
-  async update(id: number, updateRequestDto: UpdateRequestDto) {
+  async update(id: number, updateUserRequestDto: UpdateUserRequestDto) {
     const request = await this.requestModel.findByPk(id);
     if (!request) {
       throw new NotFoundException('request not found');
     }
-    await this.requestModel.update(updateRequestDto, {
+    await this.requestModel.update(updateUserRequestDto, {
       where: { id: id },
     });
     const updatedRequest = await this.requestModel.findByPk(id);
@@ -66,9 +69,9 @@ export class RequestsService {
   }
 
   async remove(id: number) {
-    const request = await this.requestModel.findByPk(id);
-    if (request) {
-      await request.destroy();
+    const user = await this.requestModel.findByPk(id);
+    if (user) {
+      await user.destroy();
     }
   }
 }

@@ -4,9 +4,10 @@ import { ReqRecvsController } from './req-recvs.controller';
 import { ReqRecv } from './entities/req-recv.model';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from 'src/users/models/user.model';
+import { UserRequest } from 'src/user-requests/entities/user-request.model';
 
 @Module({
-  imports: [SequelizeModule.forFeature([ReqRecv, Request, User])],
+  imports: [SequelizeModule.forFeature([ReqRecv, User, UserRequest])],
   controllers: [ReqRecvsController],
   providers: [ReqRecvsService],
 })

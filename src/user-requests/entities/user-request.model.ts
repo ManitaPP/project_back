@@ -14,7 +14,7 @@ import { RequestType } from 'src/request-types/entities/request-type.model';
   timestamps: true,
   paranoid: true,
 })
-export class Request extends Model<Request> {
+export class UserRequest extends Model<UserRequest> {
   @Column({
     type: DataType.INTEGER,
     autoIncrement: true,
@@ -28,9 +28,6 @@ export class Request extends Model<Request> {
   })
   status: string;
 
-  @HasMany(() => ReqRecv)
-  reqRecvs: ReqRecv[];
-
   @ForeignKey(() => RequestType)
   @Column({
     type: DataType.INTEGER,
@@ -38,6 +35,9 @@ export class Request extends Model<Request> {
   })
   requestTypeId: number;
 
-  @BelongsTo(() => RequestType, 'reTypeId')
+  @BelongsTo(() => RequestType)
   requestType: RequestType;
+
+  @HasMany(() => ReqRecv)
+  reqRecvs: ReqRecv[];
 }
