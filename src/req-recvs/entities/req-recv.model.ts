@@ -20,12 +20,34 @@ export class ReqRecv extends Model<ReqRecv> {
     primaryKey: true,
   })
   id: number;
-
   @Column({
-    type: DataType.STRING,
+    type: DataType.ENUM(
+      'รอดำเนินการ',
+      'กำลังดำเนินการ',
+      'ขอข้อมูลเพิ่มเติม',
+      'อนุมัติ',
+      'ไม่อนุมัติ',
+    ),
     allowNull: false,
   })
-  status: string;
+  status:
+    | 'รอดำเนินการ'
+    | 'กำลังดำเนินการ'
+    | 'ขอข้อมูลเพิ่มเติม'
+    | 'อนุมัติ'
+    | 'ไม่อนุมัติ';
+
+  @Column({
+    type: DataType.DATE,
+    allowNull: false,
+  })
+  sentAt: Date;
+
+  @Column({
+    type: DataType.DATE,
+    allowNull: true,
+  })
+  respondedAt: Date;
 
   @ForeignKey(() => User)
   @Column({

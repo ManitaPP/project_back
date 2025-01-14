@@ -10,6 +10,7 @@ import {
 import { Department } from 'src/departments/entities/department.model';
 import { Position } from 'src/positions/entities/position.model';
 import { ReqRecv } from 'src/req-recvs/entities/req-recv.model';
+import { UserRequest } from 'src/user-requests/entities/user-request.model';
 
 @Table({
   timestamps: true,
@@ -96,4 +97,7 @@ export class User extends Model<User> {
 
   @HasMany(() => ReqRecv)
   reqRecvs: ReqRecv[];
+
+  @HasMany(() => UserRequest)
+  request: UserRequest[];
 }

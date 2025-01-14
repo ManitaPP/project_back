@@ -25,18 +25,6 @@ export class RequestType extends Model<RequestType> {
   })
   type: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: true,
-  })
-  reason: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: true,
-  })
-  file: string;
-
   @HasMany(() => UserRequest)
   request: UserRequest[];
 }

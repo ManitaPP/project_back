@@ -1,4 +1,7 @@
 export class CreateUserRequestDto {
-  status: string;
+  // status: string;
+  reason: string;
+  file: string;
   reTypeId: number;
+  userId: number;
 }

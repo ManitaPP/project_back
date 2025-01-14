@@ -5,21 +5,33 @@ import { UpdateUserRequestDto } from './dto/update-user-request.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { UserRequest } from './entities/user-request.model';
 import { RequestType } from 'src/request-types/entities/request-type.model';
+import { User } from 'src/users/models/user.model';
 
 @Injectable()
 export class UserRequestsService {
   constructor(
     @InjectModel(UserRequest) private requestModel: typeof UserRequest,
     @InjectModel(RequestType) private requestTypeModel: typeof RequestType,
+    @InjectModel(User) private userModel: typeof User,
   ) {}
 
   async create(createUserRequestDto: CreateUserRequestDto) {
     const type = await this.requestTypeModel.findByPk(
       createUserRequestDto.reTypeId,
     );
+    if (!type) {
+      throw new Error('type not found');
+    }
+
+    const user = await this.userModel.findByPk(createUserRequestDto.userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
     const request = await this.requestModel.create({
-      ...createUserRequestDto,
+      reason: createUserRequestDto.reason,
+      file: createUserRequestDto.file,
       requestTypeId: type.id,
+      userId: user.userId,
     });
 
     return request;
@@ -32,6 +44,10 @@ export class UserRequestsService {
           model: RequestType,
           as: 'requestType',
         },
+        {
+          model: User,
+          as: 'user',
+        },
       ],
     });
   }
@@ -41,6 +57,10 @@ export class UserRequestsService {
       include: [
         {
           model: RequestType,
+          required: false,
+        },
+        {
+          model: User,
           required: false,
         },
       ],

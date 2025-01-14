@@ -6,17 +6,28 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { UserRequestsService } from './user-requests.service';
 import { CreateUserRequestDto } from './dto/create-user-request.dto';
 import { UpdateUserRequestDto } from './dto/update-user-request.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('user-requests')
 export class UserRequestsController {
   constructor(private readonly userRequestsService: UserRequestsService) {}
 
   @Post()
-  create(@Body() createUserRequestDto: CreateUserRequestDto) {
+  @UseInterceptors(FileInterceptor('file')) // Interceptor สำหรับจัดการไฟล์
+  async create(
+    @Body() createUserRequestDto: CreateUserRequestDto,
+    @UploadedFile() file: Express.Multer.File, // ใช้สำหรับรับไฟล์
+  ) {
+    if (file) {
+      console.log('File uploaded:', file.originalname);
+      createUserRequestDto.file = file.filename;
+    }
     return this.userRequestsService.create(createUserRequestDto);
   }
 

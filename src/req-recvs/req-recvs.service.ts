@@ -22,7 +22,13 @@ export class ReqRecvsService {
     const reqRecv = await this.reqRecvModel.create({
       ...createReqRecvDto,
       requestId: request.id,
-      userId: user.id,
+      userId: user.userId,
+      status: createReqRecvDto.status as
+        | 'รอดำเนินการ'
+        | 'กำลังดำเนินการ'
+        | 'ขอข้อมูลเพิ่มเติม'
+        | 'อนุมัติ'
+        | 'ไม่อนุมัติ',
     });
 
     return reqRecv;
@@ -68,15 +74,26 @@ export class ReqRecvsService {
     if (!reqRecv) {
       throw new NotFoundException('reqRecv not found');
     }
-    await this.reqRecvModel.update(updateReqRecvDto, {
-      where: { id: id },
-    });
-    const updatedreqRecv = await this.reqRecvModel.findByPk(id);
-    if (!updatedreqRecv) {
+    await this.reqRecvModel.update(
+      {
+        ...updateReqRecvDto,
+        status: updateReqRecvDto.status as
+          | 'รอดำเนินการ'
+          | 'กำลังดำเนินการ'
+          | 'ขอข้อมูลเพิ่มเติม'
+          | 'อนุมัติ'
+          | 'ไม่อนุมัติ',
+      },
+      {
+        where: { id: id },
+      },
+    );
+    const updatedReqRecv = await this.reqRecvModel.findByPk(id);
+    if (!updatedReqRecv) {
       throw new NotFoundException('Error retrieving updated reqRecv');
     }
 
-    return updatedreqRecv;
+    return updatedReqRecv;
   }
 
   async remove(id: number) {
